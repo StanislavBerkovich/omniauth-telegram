@@ -1,4 +1,4 @@
-# OmniAuth Telegram &nbsp;[![Build Status](https://secure.travis-ci.org/yurijmi/omniauth-telegram.svg?branch=master)](https://travis-ci.org/yurijmi/omniauth-telegram) [![Gem Version](https://img.shields.io/gem/v/omniauth-telegram.svg)](https://rubygems.org/gems/omniauth-telegram)
+# OmniAuth Telegram &nbsp;[![Build Status](https://secure.travis-ci.org/StanislavBerkovich/omniauth-telegram.svg?branch=master)](https://travis-ci.org/StanislavBerkovich/omniauth-telegram)
 
 Telegram Strategy for OmniAuth. You'll need to setup a bot for Telegram first. [More info here](https://core.telegram.org/widgets/login)
 
@@ -7,21 +7,21 @@ Telegram Strategy for OmniAuth. You'll need to setup a bot for Telegram first. [
 Add to your `Gemfile`:
 
 ```ruby
-gem 'omniauth-telegram'
+gem 'omniauth-telegram', git: 'https://github.com/StanislavBerkovich/omniauth-telegram'
 ```
 
 Then `bundle install`.
 
 ## Usage
 
-`OmniAuth::Strategies::Telegram` is simply a Rack middleware. Read the OmniAuth docs for detailed instructions: 
+`OmniAuth::Strategies::Telegram` is simply a Rack middleware. Read the OmniAuth docs for detailed instructions:
 https://github.com/intridea/omniauth.
 
 Here's a quick example, adding the middleware to a Rails app in `config/initializers/omniauth.rb`:
 
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :telegram, ENV['BOT_NAME'], ENV['BOT_SECRET']
+  provider :telegram, bot_name: ENV['BOT_NAME'], secret: ENV['BOT_SECRET']
 end
 ```
 
@@ -31,8 +31,8 @@ You can customise the button (more info on telegram's api website):
 
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :telegram, ENV['BOT_NAME'], ENV['BOT_SECRET'],
-    button_options: { 'request-access' => 'write' }
+  provider :telegram, bot_name: ENV['BOT_NAME'], secret: ENV['BOT_SECRET'],
+    settings: { request_access: :write }
 end
 ```
 
