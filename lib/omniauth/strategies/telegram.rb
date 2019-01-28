@@ -16,6 +16,8 @@ module OmniAuth
         'auth_date_limit' => 86400
       }.freeze
 
+      args %w[bot_name secret]
+
       option :name, 'telegram'
       option :bot_name, nil
       option :secret, nil
