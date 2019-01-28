@@ -36,14 +36,23 @@ module OmniAuth
             <title>#{settings.request_phase_title}</title>
           </head>
           <body>
+            <script type="text/javascript">
+              function window.__clickTelegramButtonAndClose () {
+                var button = document.getElementsByClassName('tgme_widget_login_button')[0];
+                button.click();
+                window.close();
+              }
+            </script>
             <script
               async
               src="#{settings.button_script_url}"
               data-telegram-login="#{options.bot_name}"
               data-auth-url="#{callback_url}"
               #{button_data_attrs.join(' ')}
+              onload="window.__clickTelegramButtonAndClose()"
             >
             </script>
+
           </body>
           </html>
         HTML
