@@ -3,6 +3,7 @@
 require 'omniauth'
 require 'openssl'
 require 'base64'
+require 'ostruct'
 
 module OmniAuth
   module Strategies
