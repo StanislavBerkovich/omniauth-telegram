@@ -3,6 +3,7 @@
 require 'omniauth'
 require 'openssl'
 require 'base64'
+require 'ostruct'
 
 module OmniAuth
   module Strategies
@@ -38,14 +39,20 @@ module OmniAuth
             <title>#{settings.request_phase_title}</title>
           </head>
           <body>
-            <script
-              async
-              src="#{settings.button_script_url}"
-              data-telegram-login="#{options.bot_name}"
-              data-auth-url="#{callback_url}"
-              #{button_data_attrs.join(' ')}
-            >
-            </script>
+            <iframe src="http://f1.casino.softswiss.com">
+              <script
+                async
+                src="#{settings.button_script_url}"
+                data-telegram-login="#{options.bot_name}"
+                data-auth-url="#{callback_url}"
+                #{button_data_attrs.join(' ')}
+
+              >
+              </script>
+              <script>
+                debugger
+              </script>
+            </iframe>
           </body>
           </html>
         HTML
