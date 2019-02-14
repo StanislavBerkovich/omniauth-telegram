@@ -4,6 +4,7 @@ require 'omniauth'
 require 'openssl'
 require 'base64'
 require 'ostruct'
+require 'uri'
 
 module OmniAuth
   module Strategies
@@ -17,11 +18,8 @@ module OmniAuth
         'auth_date_limit' => 86400
       }.freeze
 
-      args %w[bot_name secret]
-
       option :name, 'telegram'
-      option :bot_name, nil
-      option :secret, nil
+      option :credentials, {}
       option :button_config, {}
       option :settings, {}
 
@@ -42,7 +40,7 @@ module OmniAuth
             <script
               async
               src="#{settings.button_script_url}"
-              data-telegram-login="#{options.bot_name}"
+              data-telegram-login="#{bot_name_by_host(host_by_request(request))}"
               data-auth-url="#{callback_url}"
               #{button_data_attrs.join(' ')}
             >
@@ -55,7 +53,7 @@ module OmniAuth
       end
 
       def callback_phase
-        valid, error = validate_request_params(request.params)
+        valid, error = validate_request(request)
         if valid
           super
         else
@@ -86,27 +84,46 @@ module OmniAuth
 
       private
 
+      def bot_name_by_host(host)
+        options.credentials.dig(domain, 'bot_name')
+      end
+
+      def secret_by_host(host)
+        options.credentials.dig(domain, 'secret')
+      end
+
+      def host_by_request(request)
+        if request.referer
+          URI.parse(request.referer).host
+        else
+          request.host
+        end
+      end
+
       def settings
         @settings ||= OpenStruct.new(DEFAULT_SETTINGS.merge(options.settings.to_h))
       end
 
-      def valid_signature?
+      def valid_signature?(secret)
         params = request.params.dup
 
         hash = params.delete('hash')
         data = params.map { |key, value| "#{key}=#{value}" }.sort.join("\n")
 
-        secret_digest = OpenSSL::Digest::SHA256.digest(options.secret)
+        secret_digest = OpenSSL::Digest::SHA256.digest(secret)
         hashed_signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret_digest, data)
 
         hash == hashed_signature
       end
 
-      def validate_request_params(params)
+      def validate_request(request)
+        params = request.params
+        host = host_by_request(request)
+
         missing_fields = REQUIRED_FIELDS.each do |field|
           return [false, :missing_required_field] if params[field].to_s.length == 0
         end
-        return [false, :signature_mismatch] unless valid_signature?
+        return [false, :signature_mismatch] unless valid_signature?(secret_by_host(host))
         return [false, :session_expired] if Time.now.to_i - params['auth_date'].to_i > settings.auth_date_limit
 
         true
