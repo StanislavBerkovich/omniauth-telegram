@@ -49,6 +49,7 @@ module OmniAuth
 
               >
               </script>
+
               <script>
                 debugger
               </script>
